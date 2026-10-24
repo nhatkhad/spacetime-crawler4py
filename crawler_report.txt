@@ -1,0 +1,80 @@
+============================================================
+           CS 121 / INFX 141 CRAWLER REPORT
+============================================================
+
+1. Unique Pages Found: 7084
+
+2. Longest Page:
+   URL: https://swiki.ics.uci.edu/doku.php/wiki:syntax
+   Word Count: 3246
+
+3. 50 Most Common Words:
+   1. support: 29348
+   2. media: 27079
+   3. files: 22103
+   4. wiki: 21553
+   5. tools: 20943
+   6. page: 14009
+   7. manager: 13680
+   8. pasted: 13509
+   9. security: 13153
+   10. search: 11922
+   11. png: 11484
+   12. upload: 10975
+   13. services: 10607
+   14. virtual: 10529
+   15. environments: 10520
+   16. revisions: 9843
+   17. show: 9776
+   18. software: 9636
+   19. history: 9419
+   20. instructional: 9239
+   21. accounts: 9139
+   22. hardware: 9107
+   23. group: 8961
+   24. windows: 8898
+   25. file: 8719
+   26. linux: 8673
+   27. labs: 8614
+   28. commands: 8088
+   29. date: 7907
+   30. webapps: 7687
+   31. user: 7316
+   32. sitemap: 7278
+   33. requesttracker: 7134
+   34. projects: 7125
+   35. log: 7097
+   36. old: 7026
+   37. changes: 7025
+   38. backlinks: 7016
+   39. recent: 7001
+   40. site: 6987
+   41. backups: 6956
+   42. namespaces: 6879
+   43. root: 6852
+   44. courses: 6843
+   45. icsdc: 6769
+   46. name: 6749
+   47. choose: 6741
+   48. namespace: 6721
+   49. view: 6664
+   50. kb: 5733
+
+4. Subdomains in ics.uci.edu (15 total):
+   http://cml.ics.uci.edu, 4
+   http://code.ics.uci.edu, 13
+   http://courselisting.ics.uci.edu, 1
+   http://hub.ics.uci.edu, 2
+   http://informatics.ics.uci.edu, 8
+   http://mcs.ics.uci.edu, 12
+   http://mds.ics.uci.edu, 9
+   http://mswe.ics.uci.edu, 7
+   http://onboarding.ics.uci.edu, 1
+   http://rt5.ics.uci.edu, 1
+   http://signage.ics.uci.edu, 3
+   http://support.ics.uci.edu, 4
+   http://swiki.ics.uci.edu, 78
+   http://wiki.ics.uci.edu, 6909
+   http://www.ics.uci.edu, 24
+
+============================================================

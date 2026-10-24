@@ -4,6 +4,7 @@ import os
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin, urldefrag
 from collections import Counter
+import atexit
 
 SEEN_FINGERPRINTS = set()
 HAMMING_THRESHOLD = 3
@@ -171,3 +172,45 @@ def is_valid(url):
     except TypeError:
         print ("TypeError for ", parsed)
         raise
+
+def print_stats():
+    #Prints and writes final assignment report to crawler_report.txt
+    report_lines = []
+    
+    report_lines.append("=" * 60)
+    report_lines.append("           CS 121 / INFX 141 CRAWLER REPORT")
+    report_lines.append("=" * 60 + "\n")
+
+    # STAT1: Unique Pages
+    report_lines.append(f"1. Unique Pages Found: {len(UNIQUE_PAGES)}\n")
+
+    # STAT2: Longest Page
+    report_lines.append("2. Longest Page:")
+    report_lines.append(f"   URL: {LONGEST_PAGE_URL}")
+    report_lines.append(f"   Word Count: {LONGEST_PAGE_WORDS}\n")
+
+    # STAT3: 50 Most Common Words
+    report_lines.append("3. 50 Most Common Words:")
+    for rank, (word, count) in enumerate(WORD_FREQ.most_common(50), 1):
+        report_lines.append(f"   {rank}. {word}: {count}")
+    report_lines.append("")
+
+    # STAT4: Subdomains in ics.uci.edu
+    report_lines.append(f"4. Subdomains in ics.uci.edu ({len(SUB_DOMAINS)} total):")
+    for hostname in sorted(SUB_DOMAINS.keys()):
+        count = len(SUB_DOMAINS[hostname])
+        report_lines.append(f"   http://{hostname}, {count}")
+
+    report_lines.append("\n" + "=" * 60)
+
+    report_text = "\n".join(report_lines)
+    print(report_text)
+
+    # Save output automatically to report text file
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    report_path = os.path.join(base_dir, "crawler_report.txt")
+    with open("crawler_report.txt", "w", encoding="utf-8") as f:
+        f.write(report_text)
+    print("\n[SUCCESS] Final statistics written to 'crawler_report.txt'.")
+
+atexit.register(print_stats)
