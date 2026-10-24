@@ -1,80 +1,80 @@
-============================================================
-           CS 121 / INFX 141 CRAWLER REPORT
+                             CRAWLER REPORT
 ============================================================
 
-1. Unique Pages Found: 7084
+1. Unique Pages Found: 215
 
 2. Longest Page:
-   URL: https://swiki.ics.uci.edu/doku.php/wiki:syntax
-   Word Count: 3246
+   URL: https://cml.ics.uci.edu/category/aiml
+   Word Count: 25498
 
 3. 50 Most Common Words:
-   1. support: 29348
-   2. media: 27079
-   3. files: 22103
-   4. wiki: 21553
-   5. tools: 20943
-   6. page: 14009
-   7. manager: 13680
-   8. pasted: 13509
-   9. security: 13153
-   10. search: 11922
-   11. png: 11484
-   12. upload: 10975
-   13. services: 10607
-   14. virtual: 10529
-   15. environments: 10520
-   16. revisions: 9843
-   17. show: 9776
-   18. software: 9636
-   19. history: 9419
-   20. instructional: 9239
-   21. accounts: 9139
-   22. hardware: 9107
-   23. group: 8961
-   24. windows: 8898
-   25. file: 8719
-   26. linux: 8673
-   27. labs: 8614
-   28. commands: 8088
-   29. date: 7907
-   30. webapps: 7687
-   31. user: 7316
-   32. sitemap: 7278
-   33. requesttracker: 7134
-   34. projects: 7125
-   35. log: 7097
-   36. old: 7026
-   37. changes: 7025
-   38. backlinks: 7016
-   39. recent: 7001
-   40. site: 6987
-   41. backups: 6956
-   42. namespaces: 6879
-   43. root: 6852
-   44. courses: 6843
-   45. icsdc: 6769
-   46. name: 6749
-   47. choose: 6741
-   48. namespace: 6721
-   49. view: 6664
-   50. kb: 5733
+   1. ics: 2397
+   2. uci: 1463
+   3. support: 1395
+   4. wiki: 1295
+   5. edu: 1184
+   6. php: 1042
+   7. https: 1025
+   8. learning: 1018
+   9. doku: 918
+   10. group: 856
+   11. will: 783
+   12. research: 655
+   13. machine: 627
+   14. data: 620
+   15. computer: 599
+   16. university: 584
+   17. can: 551
+   18. models: 539
+   19. science: 515
+   20. user: 411
+   21. systems: 400
+   22. s: 389
+   23. information: 383
+   24. ai: 379
+   25. software: 372
+   26. tools: 345
+   27. center: 321
+   28. bren: 316
+   29. services: 316
+   30. using: 309
+   31. irvine: 307
+   32. use: 292
+   33. model: 285
+   34. pm: 284
+   35. california: 280
+   36. applications: 272
+   37. professor: 269
+   38. log: 269
+   39. access: 263
+   40. network: 262
+   41. department: 256
+   42. talk: 245
+   43. student: 236
+   44. show: 236
+   45. new: 234
+   46. language: 234
+   47. home: 232
+   48. hardware: 229
+   49. hall: 228
+   50. may: 228
 
-4. Subdomains in ics.uci.edu (15 total):
-   http://cml.ics.uci.edu, 4
-   http://code.ics.uci.edu, 13
-   http://courselisting.ics.uci.edu, 1
-   http://hub.ics.uci.edu, 2
-   http://informatics.ics.uci.edu, 8
-   http://mcs.ics.uci.edu, 12
-   http://mds.ics.uci.edu, 9
-   http://mswe.ics.uci.edu, 7
-   http://onboarding.ics.uci.edu, 1
-   http://rt5.ics.uci.edu, 1
-   http://signage.ics.uci.edu, 3
-   http://support.ics.uci.edu, 4
-   http://swiki.ics.uci.edu, 78
-   http://wiki.ics.uci.edu, 6909
-   http://www.ics.uci.edu, 24
+4. Subdomains in ics.uci.edu (16 total):
+   http://checkin.ics.uci.edu, 3
+   http://cml.ics.uci.edu, 52
+   http://dale-cooper-v0.ics.uci.edu, 14
+   http://gradinfo.ics.uci.edu, 1
+   http://helpdesk.ics.uci.edu, 3
+   http://hub.ics.uci.edu, 1
+   http://intranet.ics.uci.edu, 10
+   http://julia-hub.ics.uci.edu, 1
+   http://netreg.ics.uci.edu, 1
+   http://signage.ics.uci.edu, 2
+   http://staging-hub.ics.uci.edu, 1
+   http://support.ics.uci.edu, 3
+   http://swiki.ics.uci.edu, 16
+   http://vision.ics.uci.edu, 5
+   http://wiki.ics.uci.edu, 70
+   http://www.ics.uci.edu, 2
 
 ============================================================

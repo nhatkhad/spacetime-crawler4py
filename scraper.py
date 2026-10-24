@@ -13,6 +13,16 @@ SUB_DOMAINS = {}
 LONGEST_PAGE_URL = ""
 LONGEST_PAGE_WORDS = 0
 WORD_FREQ = Counter()
+PATH_FREQ = Counter()
+MAX_PATH_VISITS = 15
+
+def get_path_prefix(url):
+    #Extracts a normalized directory path prefix for frequency tracking
+    parsed = urlparse(url)
+    path_parts = [p for p in parsed.path.split("/") if p]
+    
+    prefix = "/".join(path_parts[:2]) if path_parts else ""
+    return f"{parsed.netloc}/{prefix}"
 
 def load_stop_words():
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -93,9 +103,25 @@ def extract_next_links(url, resp):
     parseHTML = BeautifulSoup(resp.raw_response.content, "lxml")
     text = parseHTML.get_text(separator= ' ')
     words = re.findall(r'[a-zA-Z0-9]+', text.lower())
+    tokens = three_gram(text)
+    fingerprint = compute_simhash(tokens)
+
     
+    if is_near_duplicate(fingerprint):
+        print("Duplicate page skipped:", resp.url)
+        return links
     currentUrl = urldefrag(resp.url)[0]
     UNIQUE_PAGES.add(currentUrl)
+    
+    
+    #if pages pass threshold stop getting that url
+    path_prefix = get_path_prefix(currentUrl)
+    PATH_FREQ[path_prefix] += 1
+    if PATH_FREQ[path_prefix] > MAX_PATH_VISITS:
+        print(f"Path threshold exceeded, stopping link extraction: {currentUrl}")
+        return links
+    
+    
 
     # STAT: SUBdomain
     hostname = urlparse(currentUrl).hostname
@@ -114,19 +140,15 @@ def extract_next_links(url, resp):
     # STAT: Most Common Words
     filteredWords = []
     for word in words:
-        if word not in STOP_WORDS:
+        if word not in STOP_WORDS and not word.isnumeric():
             filteredWords.append(word)
+        if len(word) <=1:
+            continue
 
     WORD_FREQ.update(filteredWords)
     #finger printing and check
     
-    tokens = three_gram(text)
-    fingerprint = compute_simhash(tokens)
     
-    
-    if is_near_duplicate(fingerprint):
-        print("Duplicate page skipped:", resp.url)
-        return links
     SEEN_FINGERPRINTS.add(fingerprint)
 
     seen_links = set()
@@ -152,13 +174,32 @@ def is_valid(url):
         if parsed.scheme not in set(["http", "https"]):
             return False
         allowed_domains = (
-            ".ics.uci.edu",
-            ".cs.uci.edu",
-            ".informatics.uci.edu",
-            ".stat.uci.edu"
+            "ics.uci.edu",
+            "cs.uci.edu",
+            "informatics.uci.edu",
+            "stat.uci.edu"
         )
-        if not parsed.netloc.endswith(allowed_domains):
+        netloc = parsed.netloc.lower().split(':')[0] 
+
+        if not any(netloc == domain or netloc.endswith("." + domain) for domain in allowed_domains):
             return False
+       
+       #block dynamic query traps
+        query = parsed.query.lower()
+        path = parsed.path.lower()
+        if any(param in query for param in ["do=", "tab_details=", "tab_files=", "image=", "idx="]):
+            return False
+        if any(param in path for param in ["requesttracker:dtr:", "network:firewall:", "timeline", "group:supprt:",
+                                           "day/","events/category"]):
+                    return False
+        if len(url) > 250:
+            return False
+        if query.count("=") > 4:
+            return False
+        
+        if re.search(r'(calendar|date|event|action=|(pix|gallery|page)=)', query):
+            return False
+        
         return not re.match(
         r".*\.(css|js|bmp|gif|jpe?g|ico"
         + r"|png|tiff?|mid|mp2|mp3|mp4"
@@ -177,8 +218,7 @@ def print_stats():
     #Prints and writes final assignment report to crawler_report.txt
     report_lines = []
     
-    report_lines.append("=" * 60)
-    report_lines.append("           CS 121 / INFX 141 CRAWLER REPORT")
+    report_lines.append("                             CRAWLER REPORT")
     report_lines.append("=" * 60 + "\n")
 
     # STAT1: Unique Pages
@@ -207,8 +247,6 @@ def print_stats():
     print(report_text)
 
     # Save output automatically to report text file
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    report_path = os.path.join(base_dir, "crawler_report.txt")
     with open("crawler_report.txt", "w", encoding="utf-8") as f:
         f.write(report_text)
     print("\n[SUCCESS] Final statistics written to 'crawler_report.txt'.")
