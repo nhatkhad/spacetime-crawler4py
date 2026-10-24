@@ -1,9 +1,26 @@
 import re
 import hashlib
 from bs4 import BeautifulSoup
-
 from urllib.parse import urlparse, urljoin, urldefrag
+from collections import Counter
 
+
+SEEN_FINGERPRINTS = set()
+HAMMING_THRESHOLD = 3
+UNIQUE_PAGES = set()
+SUB_DOMAINS = {}
+LONGEST_PAGE_URL = ""
+LONGEST_PAGE_WORDS = 0
+WORD_FREQ = Counter()
+
+def load_stop_words():
+    with open("stopwords.txt", "r") as f:
+        return {
+            line.strip().lower()
+            for line in f
+            if line.strip()
+        }
+STOP_WORDS = load_stop_words()
 
 def three_gram(text):
     words = re.findall(r'[a-zA-Z0-9]+', text.lower())
@@ -40,8 +57,7 @@ def hamming_distance(hash1, hash2):
     x = (hash1 ^ hash2) & 0xFFFFFFFFFFFFFFFF
     return bin(x).count('1')
 
-SEEN_FINGERPRINTS = set()
-HAMMING_THRESHOLD = 3
+
 def is_near_duplicate(fingerprint):
     """Checks if a fingerprint is within the threshold of any previously seen page."""
     for seen_fp in SEEN_FINGERPRINTS:
@@ -67,12 +83,30 @@ def extract_next_links(url, resp):
 
     if resp.status != 200:
         return links
+    currentUrl = urldefrag(resp.url)[0]
+    UNIQUE_PAGES.add(currentUrl)
 
     parseHTML = BeautifulSoup(resp.raw_response.content, "lxml")
     #finger printing and check
     text = parseHTML.get_text(separator= ' ')
-    tokens = three_gram(text)
+    words = re.findall(r'[a-zA-Z0-9]+', text.lower())
+    # STAT: LONGEST PAGE 
+    if len(words) > LONGEST_PAGE_WORDS:
+        LONGEST_PAGE_WORDS= len(words)
+        LONGEST_PAGE_URL = resp.url
+
+    # STAT: Most Common Words
+    filteredWords = []
+    for word in words:
+        if word not in STOP_WORDS:
+            filteredWords.append(word)
+
+    WORD_FREQ.update(filteredWords)
+    
+    
     fingerprint = compute_simhash(tokens)
+    tokens = three_gram(text)
+    
     if is_near_duplicate(fingerprint):
         print("Duplicate page skipped:", resp.url)
         return links
@@ -88,6 +122,7 @@ def extract_next_links(url, resp):
         if absoluteUrl and absoluteUrl not in seen_links:
             seen_links.add(absoluteUrl)
             links.append(absoluteUrl)
+            
     return links
 
 def is_valid(url):
