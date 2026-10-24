@@ -1,9 +1,9 @@
 import re
 import hashlib
+import os
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin, urldefrag
 from collections import Counter
-
 
 SEEN_FINGERPRINTS = set()
 HAMMING_THRESHOLD = 3
@@ -14,7 +14,10 @@ LONGEST_PAGE_WORDS = 0
 WORD_FREQ = Counter()
 
 def load_stop_words():
-    with open("stopwords.txt", "r") as f:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    stopword_path = os.path.join(base_dir, "stopword.txt")
+
+    with open(stopword_path, "r") as f:
         return {
             line.strip().lower()
             for line in f
@@ -79,17 +82,29 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
+    global LONGEST_PAGE_WORDS
+    global LONGEST_PAGE_URL
     links = []
 
     if resp.status != 200:
         return links
+
+    parseHTML = BeautifulSoup(resp.raw_response.content, "lxml")
+    text = parseHTML.get_text(separator= ' ')
+    words = re.findall(r'[a-zA-Z0-9]+', text.lower())
+    
     currentUrl = urldefrag(resp.url)[0]
     UNIQUE_PAGES.add(currentUrl)
 
-    parseHTML = BeautifulSoup(resp.raw_response.content, "lxml")
-    #finger printing and check
-    text = parseHTML.get_text(separator= ' ')
-    words = re.findall(r'[a-zA-Z0-9]+', text.lower())
+    # STAT: SUBdomain
+    hostname = urlparse(currentUrl).hostname
+    if hostname and hostname.endswith(".ics.uci.edu"):
+        if hostname not in SUB_DOMAINS:
+            SUB_DOMAINS[hostname] = set()
+        SUB_DOMAINS[hostname].add(currentUrl)
+
+    
+    
     # STAT: LONGEST PAGE 
     if len(words) > LONGEST_PAGE_WORDS:
         LONGEST_PAGE_WORDS= len(words)
@@ -102,10 +117,11 @@ def extract_next_links(url, resp):
             filteredWords.append(word)
 
     WORD_FREQ.update(filteredWords)
+    #finger printing and check
     
-    
-    fingerprint = compute_simhash(tokens)
     tokens = three_gram(text)
+    fingerprint = compute_simhash(tokens)
+    
     
     if is_near_duplicate(fingerprint):
         print("Duplicate page skipped:", resp.url)
