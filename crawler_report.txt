@@ -1,80 +1,97 @@
                              CRAWLER REPORT
 ============================================================
 
-1. Unique Pages Found: 215
+1. Unique Pages Found: 1646
 
 2. Longest Page:
-   URL: https://cml.ics.uci.edu/category/aiml
-   Word Count: 25498
+   URL: https://grape.ics.uci.edu/wiki/asterix/raw-attachment/wiki/stats170ab-2018/visualization_with_iris_data.ipynb
+   Word Count: 43010
 
 3. 50 Most Common Words:
-   1. ics: 2397
-   2. uci: 1463
-   3. support: 1395
-   4. wiki: 1295
-   5. edu: 1184
-   6. php: 1042
-   7. https: 1025
-   8. learning: 1018
-   9. doku: 918
-   10. group: 856
-   11. will: 783
-   12. research: 655
-   13. machine: 627
-   14. data: 620
-   15. computer: 599
-   16. university: 584
-   17. can: 551
-   18. models: 539
-   19. science: 515
-   20. user: 411
-   21. systems: 400
-   22. s: 389
-   23. information: 383
-   24. ai: 379
-   25. software: 372
-   26. tools: 345
-   27. center: 321
-   28. bren: 316
-   29. services: 316
-   30. using: 309
-   31. irvine: 307
-   32. use: 292
-   33. model: 285
-   34. pm: 284
-   35. california: 280
-   36. applications: 272
-   37. professor: 269
-   38. log: 269
-   39. access: 263
-   40. network: 262
-   41. department: 256
-   42. talk: 245
-   43. student: 236
-   44. show: 236
-   45. new: 234
-   46. language: 234
-   47. home: 232
-   48. hardware: 229
-   49. hall: 228
-   50. may: 228
+   1. computer: 3866
+   2. us: 3866
+   3. ics: 3836
+   4. research: 3650
+   5. uci: 3493
+   6. events: 3406
+   7. learning: 3003
+   8. wics: 2973
+   9. data: 2834
+   10. contact: 2830
+   11. science: 2717
+   12. irvine: 2702
+   13. information: 2640
+   14. software: 2352
+   15. home: 2213
+   16. news: 2176
+   17. systems: 2153
+   18. pdf: 2081
+   19. uc: 2068
+   20. week: 1940
+   21. community: 1908
+   22. ghc: 1796
+   23. school: 1734
+   24. machine: 1702
+   25. university: 1664
+   26. will: 1655
+   27. search: 1615
+   28. student: 1598
+   29. students: 1565
+   30. models: 1561
+   31. center: 1533
+   32. new: 1519
+   33. sciences: 1473
+   34. can: 1447
+   35. people: 1440
+   36. health: 1431
+   37. faculty: 1395
+   38. pm: 1357
+   39. graduate: 1341
+   40. projects: 1329
+   41. program: 1291
+   42. computational: 1256
+   43. members: 1254
+   44. development: 1250
+   45. content: 1247
+   46. committee: 1241
+   47. algorithms: 1233
+   48. professor: 1202
+   49. vision: 1200
+   50. outreach: 1190
 
-4. Subdomains in ics.uci.edu (16 total):
-   http://checkin.ics.uci.edu, 3
-   http://cml.ics.uci.edu, 52
-   http://dale-cooper-v0.ics.uci.edu, 14
-   http://gradinfo.ics.uci.edu, 1
-   http://helpdesk.ics.uci.edu, 3
-   http://hub.ics.uci.edu, 1
-   http://intranet.ics.uci.edu, 10
-   http://julia-hub.ics.uci.edu, 1
-   http://netreg.ics.uci.edu, 1
-   http://signage.ics.uci.edu, 2
-   http://staging-hub.ics.uci.edu, 1
-   http://support.ics.uci.edu, 3
-   http://swiki.ics.uci.edu, 16
-   http://vision.ics.uci.edu, 5
-   http://wiki.ics.uci.edu, 70
-   http://www.ics.uci.edu, 2
+4. Subdomains in ics.uci.edu (33 total):
+   http://acoi.ics.uci.edu, 99
+   http://archive.ics.uci.edu, 1
+   http://cml.ics.uci.edu, 114
+   http://code.ics.uci.edu, 1
+   http://computableplant.ics.uci.edu, 45
+   http://courselisting.ics.uci.edu, 2
+   http://create.ics.uci.edu, 7
+   http://cs.ics.uci.edu, 9
+   http://dgillen.ics.uci.edu, 27
+   http://duttgroup.ics.uci.edu, 1
+   http://edgelab.ics.uci.edu, 6
+   http://emj.ics.uci.edu, 30
+   http://evoke.ics.uci.edu, 4
+   http://fellowships.ics.uci.edu, 1
+   http://futurehealth.ics.uci.edu, 149
+   http://grape.ics.uci.edu, 15
+   http://hpi.ics.uci.edu, 5
+   http://industryshowcase.ics.uci.edu, 22
+   http://informatics.ics.uci.edu, 12
+   http://isg.ics.uci.edu, 4
+   http://mailman.ics.uci.edu, 3
+   http://mdogucu.ics.uci.edu, 1
+   http://mhcid.ics.uci.edu, 3
+   http://mswe.ics.uci.edu, 6
+   http://oai.ics.uci.edu, 6
+   http://riscit.ics.uci.edu, 2
+   http://stat.ics.uci.edu, 9
+   http://summeracademy.ics.uci.edu, 11
+   http://tad.ics.uci.edu, 1
+   http://tutoring.ics.uci.edu, 5
+   http://vision.ics.uci.edu, 195
+   http://wics.ics.uci.edu, 467
+   http://www.ics.uci.edu, 286
 
 ============================================================

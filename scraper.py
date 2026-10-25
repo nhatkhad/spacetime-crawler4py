@@ -6,15 +6,15 @@ from urllib.parse import urlparse, urljoin, urldefrag
 from collections import Counter
 import atexit
 
-SEEN_FINGERPRINTS = set()
-HAMMING_THRESHOLD = 3
-UNIQUE_PAGES = set()
-SUB_DOMAINS = {}
-LONGEST_PAGE_URL = ""
-LONGEST_PAGE_WORDS = 0
-WORD_FREQ = Counter()
-PATH_FREQ = Counter()
-MAX_PATH_VISITS = 15
+SEEN_FINGERPRINTS = set() #stores simhash fingerprints of previous page
+HAMMING_THRESHOLD = 3 #hamming distance duplication test
+UNIQUE_PAGES = set() #number of unique pages for stats
+SUB_DOMAINS = {} #maps each subdomain of ics
+LONGEST_PAGE_URL = "" #tracks url of longest page
+LONGEST_PAGE_WORDS = 0 #tracks longest words in that said page
+WORD_FREQ = Counter() #counts the frequency of words across all pages crawled
+PATH_FREQ = Counter() #tracks how many pages have been seen for trap detection
+MAX_PATH_VISITS = 15 #maximum of pages similar for trap detection
 
 def get_path_prefix(url):
     #Extracts a normalized directory path prefix for frequency tracking
@@ -25,6 +25,9 @@ def get_path_prefix(url):
     return f"{parsed.netloc}/{prefix}"
 
 def load_stop_words():
+    """
+    adds in stop words from the website to use to find most common words
+    """
     base_dir = os.path.dirname(os.path.abspath(__file__))
     stopword_path = os.path.join(base_dir, "stopword.txt")
 
@@ -34,9 +37,12 @@ def load_stop_words():
             for line in f
             if line.strip()
         }
-STOP_WORDS = load_stop_words()
+STOP_WORDS = load_stop_words() #brings in stop words
 
 def three_gram(text):
+    """
+        converts page text into 3 word partitions
+    """
     words = re.findall(r'[a-zA-Z0-9]+', text.lower())
 
     if len(words) < 3:
@@ -48,7 +54,9 @@ def three_gram(text):
     ]
 
 def compute_simhash(tokens):
-    """Computes a 64-bit SimHash integer from a list of token strings."""
+    """
+    Computes a 64-bit SimHash integer from a list of token strings
+    """
     if not tokens:
         return 0
     
@@ -67,13 +75,17 @@ def compute_simhash(tokens):
     return fingerprint
 
 def hamming_distance(hash1, hash2):
-    """Calculates the number of differing bits between two 64-bit integers."""
+    """
+    Calculates the number of differing bits between two 64-bit integers
+    """
     x = (hash1 ^ hash2) & 0xFFFFFFFFFFFFFFFF
     return bin(x).count('1')
 
 
 def is_near_duplicate(fingerprint):
-    """Checks if a fingerprint is within the threshold of any previously seen page."""
+    """
+    Checks if a fingerprint is within the threshold of any previously seen page
+    """
     for seen_fp in SEEN_FINGERPRINTS:
         if hamming_distance(fingerprint, seen_fp) <= HAMMING_THRESHOLD:
             return True
@@ -95,69 +107,78 @@ def extract_next_links(url, resp):
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
     global LONGEST_PAGE_WORDS
     global LONGEST_PAGE_URL
+    
     links = []
-
-    if resp.status != 200:
+    #handles failed request or pages with no content
+    if (resp.status != 200 or not resp.raw_response or not resp.raw_response.content):
         return links
-
+    
+    #parse html and extract text
     parseHTML = BeautifulSoup(resp.raw_response.content, "lxml")
     text = parseHTML.get_text(separator= ' ')
     words = re.findall(r'[a-zA-Z0-9]+', text.lower())
+
+    #generate 3 gram and compute simhash duplicationtester
     tokens = three_gram(text)
     fingerprint = compute_simhash(tokens)
 
-    
-    if is_near_duplicate(fingerprint):
-        print("Duplicate page skipped:", resp.url)
-        return links
+    #remove url fragments for testing to see if same page is not counted multiple times
     currentUrl = urldefrag(resp.url)[0]
-    UNIQUE_PAGES.add(currentUrl)
     
-    
-    #if pages pass threshold stop getting that url
+    #if pages pass threshold stop getting that url, trap detection
     path_prefix = get_path_prefix(currentUrl)
     PATH_FREQ[path_prefix] += 1
     if PATH_FREQ[path_prefix] > MAX_PATH_VISITS:
         print(f"Path threshold exceeded, stopping link extraction: {currentUrl}")
         return links
-    
-    
 
-    # STAT: SUBdomain
+    #pages with low information arent worth alot
+    if len(words) < 50:
+        return links
+
+    #ignore pages that are near-duplicates
+    if is_near_duplicate(fingerprint):
+        print("Duplicate page skipped:", resp.url)
+        return links
+    #####################################################################################
+    # STAT1: record accepted pages for unique stat
+    UNIQUE_PAGES.add(currentUrl)
+    
+    # STAT2: SUBdomain
     hostname = urlparse(currentUrl).hostname
     if hostname and hostname.endswith(".ics.uci.edu"):
         if hostname not in SUB_DOMAINS:
             SUB_DOMAINS[hostname] = set()
         SUB_DOMAINS[hostname].add(currentUrl)
 
-    
-    
-    # STAT: LONGEST PAGE 
+    # STAT3: LONGEST PAGE 
     if len(words) > LONGEST_PAGE_WORDS:
         LONGEST_PAGE_WORDS= len(words)
         LONGEST_PAGE_URL = resp.url
 
-    # STAT: Most Common Words
+    # STAT4: Most Common Words
     filteredWords = []
     for word in words:
-        if word not in STOP_WORDS and not word.isnumeric():
-            filteredWords.append(word)
         if len(word) <=1:
             continue
+        if word not in STOP_WORDS and not word.isnumeric():
+            filteredWords.append(word)
 
     WORD_FREQ.update(filteredWords)
-    #finger printing and check
+    #####################################################################################
     
-    
+    #finger printing storage and check for duplicate detection
     SEEN_FINGERPRINTS.add(fingerprint)
-
+    #extract hyperlinks 
     seen_links = set()
+
     for tag in parseHTML.find_all("a", href = True):
         href = tag["href"]
-
+        #convert relative to absolute urls
         absoluteUrl = urljoin(resp.url, href)
-
+        #remove url fragments
         absoluteUrl = urldefrag(absoluteUrl)[0]
+        #prevent duplicate links from being added multiple times
         if absoluteUrl and absoluteUrl not in seen_links:
             seen_links.add(absoluteUrl)
             links.append(absoluteUrl)
@@ -169,10 +190,11 @@ def is_valid(url):
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
     try:
-
+        #parse URL components and ensure HTTP/HTTPS protocol.
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
+        #restrict crawl to these domains
         allowed_domains = (
             "ics.uci.edu",
             "cs.uci.edu",
@@ -181,23 +203,33 @@ def is_valid(url):
         )
         netloc = parsed.netloc.lower().split(':')[0] 
 
+        #reject url outside allowed domains
         if not any(netloc == domain or netloc.endswith("." + domain) for domain in allowed_domains):
             return False
        
        #block dynamic query traps
         query = parsed.query.lower()
         path = parsed.path.lower()
+
+        #block dynamic query parameter with large numbers of duplicate URLs
         if any(param in query for param in ["do=", "tab_details=", "tab_files=", "image=", "idx="]):
             return False
+        #block the path pattern seen from crawling
         if any(param in path for param in ["requesttracker:dtr:", "network:firewall:", "timeline", "group:supprt:",
                                            "day/","events/category"]):
                     return False
+        #reject any urls that are super long pattern typically traps
         if len(url) > 250:
             return False
+        #reject urls with too many queries
         if query.count("=") > 4:
             return False
-        
+        #block common pages that produce infinite crawlspaces events/calendars/etc
         if re.search(r'(calendar|date|event|action=|(pix|gallery|page)=)', query):
+            return False
+        #stop crawling prefixes that past the set threshold
+        path_prefix = get_path_prefix(url)
+        if PATH_FREQ[path_prefix] >= MAX_PATH_VISITS:
             return False
         
         return not re.match(
@@ -215,10 +247,12 @@ def is_valid(url):
         raise
 
 def print_stats():
-    #Prints and writes final assignment report to crawler_report.txt
+    """
+    Prints and writes final assignment report to crawler_report.txt
+    """
     report_lines = []
     
-    report_lines.append("                             CRAWLER REPORT")
+    report_lines.append("                                CRAWLER REPORT")
     report_lines.append("=" * 60 + "\n")
 
     # STAT1: Unique Pages
